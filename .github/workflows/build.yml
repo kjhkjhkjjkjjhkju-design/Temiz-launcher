@@ -1,0 +1,30 @@
+name: APK derle
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Kaynağı aç
+        run: |
+          mkdir proje
+          unzip -q kaynak.zip -d proje
+      - name: Derle
+        working-directory: proje
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+      - name: APK boyutu
+        run: ls -l proje/app/build/outputs/apk/release/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ana-ekran-apk
+          path: proje/app/build/outputs/apk/release/*.apk
